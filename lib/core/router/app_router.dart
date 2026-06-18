@@ -9,6 +9,8 @@ import 'package:home_vault/features/auth/presentation/screens/register_screen.da
 import 'package:home_vault/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:home_vault/features/items/domain/entities/item.dart';
 import 'package:home_vault/features/items/presentation/screens/add_edit_item_screen.dart';
+import 'package:home_vault/features/scanner/domain/entities/scan_result.dart';
+import 'package:home_vault/features/scanner/presentation/screens/scanner_screen.dart';
 import 'package:home_vault/features/splash/presentation/screens/splash_screen.dart';
 
 abstract class AppRoutes {
@@ -17,6 +19,7 @@ abstract class AppRoutes {
   static const String register = '/register';
   static const String dashboard = '/dashboard';
   static const String addItem = '/items/add';
+  static const String scanner = '/scanner';
   static String editItem(String id) => '/items/$id/edit';
 }
 
@@ -91,7 +94,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.addItem,
         name: 'add-item',
-        builder: (_, __) => const AddEditItemScreen(),
+        builder: (_, state) => AddEditItemScreen(
+          scanResult: state.extra is ScanResult ? state.extra as ScanResult : null,
+        ),
       ),
       GoRoute(
         path: '/items/:id/edit',
@@ -99,6 +104,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => AddEditItemScreen(
           existingItem: state.extra as Item?,
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.scanner,
+        name: 'scanner',
+        builder: (_, __) => const ScannerScreen(),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(

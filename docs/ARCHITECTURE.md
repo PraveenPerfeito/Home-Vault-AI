@@ -57,8 +57,21 @@ lib/
     │       ├── providers/items_providers.dart   itemsStreamProvider, itemStatsProvider, itemActionsProvider
     │       ├── screens/add_edit_item_screen.dart  Create/Edit form — category chips, date pickers
     │       └── widgets/                         item_card.dart, category_chip.dart
+    ├── scanner/
+    │   ├── domain/
+    │   │   ├── entities/scan_result.dart               ScanResult (rawText, extractedName?, extractedExpiry?)
+    │   │   ├── repositories/scanner_repository.dart    Abstract: processImage(imagePath)
+    │   │   ├── services/expiry_date_extractor.dart     Static: regex date extraction (6 formats)
+    │   │   └── services/product_name_extractor.dart    Static: scoring heuristic for product names
+    │   ├── data/
+    │   │   ├── datasources/scanner_datasource.dart     ML Kit TextRecognizer wrapper
+    │   │   └── repositories/scanner_repository_impl.dart  Combines datasource + extractors
+    │   └── presentation/
+    │       ├── providers/scanner_providers.dart        scannerRepositoryProvider, scanActionsProvider
+    │       ├── screens/scanner_screen.dart             Picker → loading → ScanResultCard
+    │       └── widgets/scan_result_card.dart           Detected name/expiry + raw text toggle + action buttons
     ├── dashboard/
-    │   └── presentation/screens/dashboard_screen.dart  Stats row + items list + FAB + logout
+    │   └── presentation/screens/dashboard_screen.dart  Stats row + items list + FAB (scan/manual) + logout
     └── splash/
         └── presentation/screens/splash_screen.dart     Auth-aware entry point
 ```
@@ -82,6 +95,8 @@ lib/
 | logger | ^2.4.0 | Structured logging |
 | equatable | ^2.0.5 | Value equality on domain entities |
 | intl | ^0.19.0 | Date formatting (declared; hand-rolled arrays used instead — see Decisions) |
+| image_picker | ^1.1.2 | Camera capture + gallery selection (Phase 3) |
+| google_mlkit_text_recognition | ^0.13.1 | On-device OCR — no network required (Phase 3) |
 
 ---
 
@@ -158,6 +173,13 @@ service cloud.firestore {
 ## Design Decisions
 
 See [DECISIONS.md](DECISIONS.md) for the full decision log.
+
+Key Phase 3 decisions:
+- On-device ML Kit OCR (no AI API costs, works offline after model download)
+- `ExpiryDateExtractor` uses span-tracking to avoid DD/MM/YYYY → MM/YYYY double-match
+- Photo upload (photoUrl) deferred to Phase 4 — out of Phase 3 scope
+- `ScanResult` passed via GoRouter `extra` to `AddEditItemScreen` for form pre-fill
+- `ScanActionsNotifier` is AutoDispose — scanner state is reset when screen is popped
 
 Key Phase 2 / 2.1 decisions:
 - Firestore IDs generated server-side via `collection.add()` (no UUID package)

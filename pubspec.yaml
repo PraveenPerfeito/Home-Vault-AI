@@ -28,6 +28,10 @@ dependencies:
   # Local storage
   hive_flutter: ^1.1.0
 
+  # OCR Scanner (Phase 3)
+  image_picker: ^1.1.2
+  google_mlkit_text_recognition: ^0.13.1
+
   # Utilities
   logger: ^2.4.0
   equatable: ^2.0.5

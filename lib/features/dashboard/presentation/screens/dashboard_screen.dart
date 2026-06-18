@@ -113,11 +113,42 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.addItem),
+        onPressed: () => _showAddOptions(context),
         icon: const Icon(Icons.add),
         label: const Text('Add Item'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  void _showAddOptions(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.document_scanner_outlined),
+            title: const Text('Scan Product'),
+            subtitle: const Text('Auto-read expiry date from a photo'),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(AppRoutes.scanner);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit_note_outlined),
+            title: const Text('Add Manually'),
+            subtitle: const Text('Enter product details by hand'),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(AppRoutes.addItem);
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }

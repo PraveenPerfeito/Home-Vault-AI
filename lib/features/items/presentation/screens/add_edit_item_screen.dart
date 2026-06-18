@@ -6,11 +6,13 @@ import 'package:home_vault/core/theme/app_colors.dart';
 import 'package:home_vault/features/items/domain/entities/item.dart';
 import 'package:home_vault/features/items/presentation/providers/items_providers.dart';
 import 'package:home_vault/features/items/presentation/widgets/category_chip.dart';
+import 'package:home_vault/features/scanner/domain/entities/scan_result.dart';
 
 class AddEditItemScreen extends ConsumerStatefulWidget {
   final Item? existingItem;
+  final ScanResult? scanResult;
 
-  const AddEditItemScreen({super.key, this.existingItem});
+  const AddEditItemScreen({super.key, this.existingItem, this.scanResult});
 
   @override
   ConsumerState<AddEditItemScreen> createState() => _AddEditItemScreenState();
@@ -35,11 +37,15 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
   void initState() {
     super.initState();
     final item = widget.existingItem;
-    _nameController = TextEditingController(text: item?.name ?? '');
+    final scan = widget.scanResult;
+    // Pre-fill from OCR scan result when creating a new item (not editing)
+    _nameController = TextEditingController(
+      text: item?.name ?? scan?.extractedName ?? '',
+    );
     _notesController = TextEditingController(text: item?.notes ?? '');
     _category = item?.category ?? ItemCategory.other;
     _purchaseDate = item?.purchaseDate;
-    _expiryDate = item?.expiryDate;
+    _expiryDate = item?.expiryDate ?? scan?.extractedExpiry;
 
     // H3: moved from build() to initState so the callback is registered once
     // and cannot trigger a spurious context.pop() on incidental widget rebuilds.
@@ -109,6 +115,36 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (widget.scanResult != null && !_isEditing) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.info.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.info.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.auto_fix_high_outlined,
+                      size: 16,
+                      color: AppColors.info,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Values pre-filled from label scan — please verify.',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: AppColors.info),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             // H6: maxLength 100 prevents unbounded Firestore writes.
             TextFormField(
               controller: _nameController,

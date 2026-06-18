@@ -363,6 +363,106 @@ This closes the client-side gap; `firestore.rules` is the server-side enforcemen
 
 ---
 
+---
+
+## 2026-06-19 (Phase 3 — OCR Scanner)
+
+### Decision: On-Device OCR via Google ML Kit (No AI API)
+
+Status: Accepted
+
+Reason:
+
+Google ML Kit text recognition runs entirely on-device after the model is
+downloaded at install time (via `com.google.mlkit.vision.DEPENDENCIES`). There
+are no per-scan API costs, no network latency, and no external dependency at
+runtime.
+
+Impact:
+
+OCR accuracy is limited to what the device camera and ML Kit's Latin-script
+model can resolve. Blurry, low-contrast, or stylised text may not be read.
+Supported formats are limited to what `ExpiryDateExtractor` parses (6 formats).
+
+Alternatives considered:
+- Google Vision API / OpenAI Vision — rejected; per-call cost and network
+  dependency break the offline-first goal.
+
+---
+
+### Decision: `ExpiryDateExtractor` Uses Span-Tracking to Prevent Double-Match
+
+Status: Accepted
+
+Reason:
+
+`MM/YYYY` and `DD/MM/YYYY` share a common suffix. Running both regexes naively
+on `15/08/2027` would match both `15/08/2027` (correct) AND `08/2027` (false
+duplicate), resulting in two DateTime values for the same text.
+
+Impact:
+
+`_datesFromText` processes DD/MM/YYYY first and records the character spans of
+each match. When MM/YYYY is processed next, any match whose span overlaps a
+recorded DD/MM/YYYY span is skipped.
+
+---
+
+### Decision: Product Name Extraction is Heuristic-Only
+
+Status: Accepted (with known limitations)
+
+Reason:
+
+There is no reliable structural signal in OCR text to identify the product name.
+A scoring function (letter ratio, word count, ALL-CAPS bonus, length band) picks
+the highest-scoring line. It works well for simple single-product labels but will
+fail on busy, multi-section labels.
+
+Impact:
+
+The extracted name is shown as a pre-filled suggestion that the user can edit
+before saving. OCR accuracy for names should not be over-represented; Phase 4
+could add a "edit extracted name" step.
+
+---
+
+### Decision: Photo Upload (photoUrl) Deferred to Phase 4
+
+Status: Deferred
+
+Reason:
+
+Firebase Storage upload adds error handling complexity (upload progress, retry,
+quota) that is out of scope for the OCR Phase 3 goal of expiry date extraction.
+The user can scan and add a product without attaching a photo.
+
+Impact:
+
+`Item.photoUrl` remains unused in Phase 3. Firebase Storage is configured but
+not called during add/edit flows.
+
+---
+
+### Decision: `ScanResult` Passed via GoRouter `extra` to `AddEditItemScreen`
+
+Status: Accepted
+
+Reason:
+
+GoRouter's `extra` parameter allows type-safe data passing between routes without
+encoding data into the URL (which would require URI-safe serialisation of
+DateTime). The router checks `state.extra is ScanResult` before casting to
+prevent runtime type errors when navigating without scan data.
+
+Impact:
+
+`AddEditItemScreen` accepts an optional `ScanResult? scanResult` parameter. When
+present (and `existingItem` is null), it pre-fills the name and expiry date.
+An info banner is shown to remind the user to verify the scanned values.
+
+---
+
 ## Deferred Decisions
 
 These decisions are intentionally postponed.

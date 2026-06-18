@@ -49,16 +49,28 @@
 - `user-not-found` / `wrong-password` / `invalid-credential` merged to single message — account enumeration closed
 - Dead `Failure` hierarchy (`failure.dart`) deleted — `AppException` is the sole error contract
 
-## Phase 3 — OCR Scanner
+## Phase 3 ✅ Completed — OCR Scanner
 
-- Camera integration (image_picker)
-- Gallery upload
-- ML Kit on-device OCR
-- Expiry date extraction
-- Product name extraction
-- Manual correction UI
-- Photo upload to Firebase Storage
-- photoUrl persisted on Item
+**Completed tasks:**
+- `image_picker` integration — camera capture + gallery selection
+- `google_mlkit_text_recognition` on-device OCR (Latin script, no network required)
+- ML Kit model pre-downloaded at install via `com.google.mlkit.vision.DEPENDENCIES` meta-data
+- `ExpiryDateExtractor` — regex engine supporting all 6 required formats:
+  - `MM/YYYY`, `MM-YYYY`, `DD/MM/YYYY`, `DD-MM-YYYY`, `AUG 2027`, `AUG-2027`
+  - Keyword-first priority (`EXP`, `BEST BEFORE`, `USE BY`, `BBD`, etc.)
+  - Span-tracking to prevent double-matching DD/MM/YYYY as MM/YYYY
+  - Year range guard (2020–2040); plausibility filter (−2 to +15 years from today)
+- `ProductNameExtractor` — scoring heuristic (letter ratio, word count, length, ALL-CAPS bonus)
+- `ScannerScreen` — Camera/Gallery picker → loading → result view
+- `ScanResultCard` — shows detected name + expiry, collapsible raw text, Scan Again + Add Item buttons
+- `AddEditItemScreen` — `ScanResult?` parameter; pre-fills name + expiry; shows info banner
+- `DashboardScreen` FAB — bottom sheet with Scan Product / Add Manually options
+- `AppRoutes.scanner = '/scanner'` route added to GoRouter
+
+**Deferred from Phase 3 scope:**
+- Photo upload to Firebase Storage (photoUrl on Item) — deferred to Phase 4
+- Barcode scanning — out of scope per PRD
+- Warranty date extraction — out of scope per PRD
 
 ## Phase 4 — Dashboard Enhancements
 
