@@ -1,0 +1,2 @@
+// Root build.gradle — plugin versions are declared in settings.gradle (AGP 8+).
+// Per-project configuration lives in android/app/build.gradle.

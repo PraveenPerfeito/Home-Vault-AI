@@ -1,0 +1,55 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VSCode related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Android local configuration (contains sdk.dir and flutter.sdk paths)
+android/local.properties
+
+# Firebase - NEVER commit these
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Generated Firebase configuration — regenerate with: flutterfire configure
+lib/core/config/firebase_options.dart
+
+# Environment secrets
+.env
+.env.local
