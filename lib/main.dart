@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_vault/core/config/app_config.dart';
-import 'package:home_vault/core/config/firebase_options.dart';
+import 'package:home_vault/firebase_options.dart';
 import 'package:home_vault/core/logging/app_logger.dart';
 import 'package:home_vault/core/router/app_router.dart';
 import 'package:home_vault/core/storage/hive_service.dart';

@@ -29,14 +29,20 @@ final _routerNotifierProvider =
 
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(Ref ref) {
+    _authValue = ref.read(authStateProvider);
     ref.listen<AsyncValue<AppUser?>>(
       authStateProvider,
-      (_, __) => notifyListeners(),
+      (_, next) {
+        _authValue = next;
+        notifyListeners();
+      },
     );
   }
 
-  String? redirect(GoRouterState state, Ref ref) {
-    final authValue = ref.read(authStateProvider);
+  AsyncValue<AppUser?> _authValue = const AsyncValue.loading();
+
+  String? redirect(GoRouterState state) {
+    final authValue = _authValue;
     final location = state.matchedLocation;
 
     // Auth still loading — only the splash is safe to show.
@@ -69,7 +75,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: notifier,
-    redirect: (context, state) => notifier.redirect(state, ref),
+    redirect: (context, state) => notifier.redirect(state),
     routes: [
       GoRoute(
         path: AppRoutes.splash,

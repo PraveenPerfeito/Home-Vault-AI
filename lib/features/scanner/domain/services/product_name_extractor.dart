@@ -48,40 +48,59 @@ class ProductNameExtractor {
     // Pure date lines with no word context are skipped
     if (_dateLike.hasMatch(line) && !_hasEnoughWords(line)) return 0;
 
-    final letters = line.split('').where((c) => RegExp(r'[a-zA-Z]').hasMatch(c)).length;
+    final letters =
+        line.split('').where((c) => RegExp(r'[a-zA-Z]').hasMatch(c)).length;
     final letterRatio = letters / line.length;
     if (letterRatio < 0.4) return 0; // too many digits / symbols
 
-    final words = line.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final words =
+        line.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
     final wordCount = words.length;
 
     final double wordScore;
-    if (wordCount == 1) wordScore = 0.4;
-    else if (wordCount <= 5) wordScore = 1.0;
-    else if (wordCount <= 8) wordScore = 0.7;
-    else wordScore = 0.3;
+    if (wordCount == 1) {
+      wordScore = 0.4;
+    } else if (wordCount <= 5)
+      wordScore = 1.0;
+    else if (wordCount <= 8)
+      wordScore = 0.7;
+    else
+      wordScore = 0.3;
 
     final double lengthScore;
-    if (line.length >= 6 && line.length <= 40) lengthScore = 1.0;
-    else if (line.length < 6) lengthScore = 0.4;
-    else if (line.length <= 80) lengthScore = 0.6;
-    else lengthScore = 0.2;
+    if (line.length >= 6 && line.length <= 40) {
+      lengthScore = 1.0;
+    } else if (line.length < 6)
+      lengthScore = 0.4;
+    else if (line.length <= 80)
+      lengthScore = 0.6;
+    else
+      lengthScore = 0.2;
 
     // Bonus for ALL-CAPS words (common on product labels)
-    final uppercaseCount = words.where(
-      (w) => w.length > 1 && w == w.toUpperCase() && RegExp(r'[A-Z]').hasMatch(w),
-    ).length;
+    final uppercaseCount = words
+        .where(
+          (w) =>
+              w.length > 1 &&
+              w == w.toUpperCase() &&
+              RegExp(r'[A-Z]').hasMatch(w),
+        )
+        .length;
     final double uppercaseBonus = (uppercaseCount * 0.15).clamp(0, 0.4);
 
-    return (letterRatio * 0.3 + wordScore * 0.4 + lengthScore * 0.3 + uppercaseBonus)
+    return (letterRatio * 0.3 +
+            wordScore * 0.4 +
+            lengthScore * 0.3 +
+            uppercaseBonus)
         .clamp(0.0, 1.0);
   }
 
   static bool _hasEnoughWords(String line) {
     return line
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((w) => RegExp(r'^[a-zA-Z]{3,}$').hasMatch(w))
-        .length >= 2;
+            .trim()
+            .split(RegExp(r'\s+'))
+            .where((w) => RegExp(r'^[a-zA-Z]{3,}$').hasMatch(w))
+            .length >=
+        2;
   }
 }

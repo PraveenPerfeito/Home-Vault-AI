@@ -463,6 +463,71 @@ An info banner is shown to remind the user to verify the scanned values.
 
 ---
 
+---
+
+## 2026-06-21 (OCR Validation Review)
+
+### Decision: Accept 2-Digit Year Gap as Known Limitation for MVP
+
+Status: Accepted (deferring fix to Phase 4)
+
+Reason:
+
+MM/YY (e.g. `06/25`) and DDMMYY (e.g. `250625`) formats appear on medicine
+packaging and small sachets. Adding 2-digit year support requires careful
+span-overlap checking and a century-expansion rule (yy < 50 → 20xx). The fix
+is safe but not required to launch — the user's manual edit covers the gap.
+
+Impact:
+
+Users scanning medicine packaging with 2-digit expiry years will get no
+auto-filled date. They must enter it manually. Known issue, not a blocker.
+
+Alternatives considered:
+- Implement MM/YY regex immediately — deferred; correctness requires span
+  tracking and century expansion. Phase 4 is the right time alongside
+  broader OCR improvements.
+
+---
+
+### Decision: `/` Separator Bug in Month-Name Pattern is a Known Defect
+
+Status: Accepted fix in Phase 4
+
+Reason:
+
+Pattern 3 (`jan... [.\- ] YYYY`) uses `[.\- ]` as the separator character class,
+which excludes `/`. Labels printing `JUN/2025` will not be parsed.
+The fix is a one-character change (`[./\- ]`) but is grouped with other
+regex improvements to avoid churn.
+
+Impact:
+
+`JUN/2025`, `AUG/2026` style dates on labels are silently missed.
+Workaround: user enters date manually.
+
+---
+
+### Decision: False Positive Risk from Lot Numbers is Accepted for MVP
+
+Status: Accepted (low frequency in practice)
+
+Reason:
+
+Lot numbers like `L/N: 12/2024` match the MM/YYYY pattern. In practice, lot
+numbers are almost always past dates, so `_bestDate` discards them when a
+future expiry date is also present (it prefers future dates). The risk only
+materialises when no future date exists and only a lot-number date is detected.
+
+Impact:
+
+Low frequency false positive. User sees an incorrect pre-filled date and must
+correct it. The field is editable so this is recoverable.
+Phase 4 can add a negative-keyword filter: deprioritize dates from lines
+containing `lot|batch|l/n|s/n|serial`.
+
+---
+
 ## Deferred Decisions
 
 These decisions are intentionally postponed.
