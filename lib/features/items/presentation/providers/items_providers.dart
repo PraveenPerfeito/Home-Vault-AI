@@ -31,41 +31,94 @@ final itemsStreamProvider = StreamProvider.autoDispose<List<Item>>((ref) {
   return ref.watch(itemsRepositoryProvider).watchItems(userId: user.id);
 });
 
-// ── Derived stats ─────────────────────────────────────────────────────────
+// ── Expiry Dashboard ─────────────────────────────────────────────────────────
 
-class ItemStats {
-  final int total;
-  final int expiringSoon; // within 7 days
-  final int expired;
+/// Items bucketed into 5 expiry sections, sorted within each section.
+///
+/// Each item appears in exactly ONE section based on its urgency:
+///   expired → expiringToday → expiringWeek → expiringMonth → recentlyAdded
+class ExpiryDashboardData {
+  final List<Item> expired;
+  final List<Item> expiringToday;
+  final List<Item> expiringWeek;  // 1–7 days
+  final List<Item> expiringMonth; // 8–30 days
+  final List<Item> recentlyAdded; // >30 days or no expiry — sorted by createdAt desc
 
-  const ItemStats({
-    required this.total,
-    required this.expiringSoon,
+  const ExpiryDashboardData({
     required this.expired,
+    required this.expiringToday,
+    required this.expiringWeek,
+    required this.expiringMonth,
+    required this.recentlyAdded,
   });
+
+  int get totalCount =>
+      expired.length +
+      expiringToday.length +
+      expiringWeek.length +
+      expiringMonth.length +
+      recentlyAdded.length;
+
+  int get expiredCount => expired.length;
+
+  // "Expiring soon" = today + within 7 days
+  int get expiringSoonCount => expiringToday.length + expiringWeek.length;
+
+  bool get isEmpty => totalCount == 0;
 }
 
-final itemStatsProvider = Provider.autoDispose<ItemStats>((ref) {
+final expiryDashboardProvider =
+    Provider.autoDispose<ExpiryDashboardData>((ref) {
   final items = ref.watch(itemsStreamProvider).valueOrNull ?? [];
   final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
 
-  int expiringSoon = 0;
-  int expired = 0;
+  final expired = <Item>[];
+  final expiringToday = <Item>[];
+  final expiringWeek = <Item>[];
+  final expiringMonth = <Item>[];
+  final recentlyAdded = <Item>[];
 
   for (final item in items) {
-    if (item.expiryDate == null) continue;
-    final days = item.expiryDate!.difference(now).inDays;
-    if (days < 0) {
-      expired++;
-    } else if (days <= 7) {
-      expiringSoon++;
+    final expiry = item.expiryDate;
+    if (expiry == null) {
+      recentlyAdded.add(item);
+      continue;
+    }
+    // Compare at day granularity (ignore time-of-day)
+    final expiryDay = DateTime(expiry.year, expiry.month, expiry.day);
+    final daysDiff = expiryDay.difference(today).inDays;
+
+    if (daysDiff < 0) {
+      expired.add(item);
+    } else if (daysDiff == 0) {
+      expiringToday.add(item);
+    } else if (daysDiff <= 7) {
+      expiringWeek.add(item);
+    } else if (daysDiff <= 30) {
+      expiringMonth.add(item);
+    } else {
+      recentlyAdded.add(item);
     }
   }
 
-  return ItemStats(
-    total: items.length,
-    expiringSoon: expiringSoon,
+  // Sort each section for maximum usefulness
+  // Expired: most recently expired first (so user sees what just expired)
+  expired.sort((a, b) => b.expiryDate!.compareTo(a.expiryDate!));
+  // Today: alphabetical (few items, order matters less)
+  expiringToday.sort((a, b) => a.name.compareTo(b.name));
+  // Week + Month: soonest first (most urgent at top)
+  expiringWeek.sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
+  expiringMonth.sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
+  // Recently Added: newest first
+  recentlyAdded.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+  return ExpiryDashboardData(
     expired: expired,
+    expiringToday: expiringToday,
+    expiringWeek: expiringWeek,
+    expiringMonth: expiringMonth,
+    recentlyAdded: recentlyAdded,
   );
 });
 
@@ -96,7 +149,7 @@ class ItemActionsNotifier extends AutoDisposeAsyncNotifier<void> {
     state = await AsyncValue.guard(() => _repo.createItem(Item(
           id: '', // Firestore generates the real ID via collection.add()
           userId: user.id,
-          name: name,
+          name: name.trim(),
           category: category,
           purchaseDate: purchaseDate,
           expiryDate: expiryDate,

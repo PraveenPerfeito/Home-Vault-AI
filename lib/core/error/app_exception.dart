@@ -11,26 +11,21 @@ class AppException implements Exception {
 }
 
 class NetworkException extends AppException {
-  const NetworkException(String message, {Object? cause})
-      : super(message, cause: cause);
+  const NetworkException(super.message, {super.cause});
 }
 
 class AuthException extends AppException {
-  const AuthException(String message, {Object? cause})
-      : super(message, cause: cause);
+  const AuthException(super.message, {super.cause});
 }
 
 class StorageException extends AppException {
-  const StorageException(String message, {Object? cause})
-      : super(message, cause: cause);
+  const StorageException(super.message, {super.cause});
 }
 
 class NotFoundException extends AppException {
-  const NotFoundException(String message, {Object? cause})
-      : super(message, cause: cause);
+  const NotFoundException(super.message, {super.cause});
 }
 
 class PermissionException extends AppException {
-  const PermissionException(String message, {Object? cause})
-      : super(message, cause: cause);
+  const PermissionException(super.message, {super.cause});
 }

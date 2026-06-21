@@ -14,13 +14,10 @@ dependencies:
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
-  firebase_storage: ^12.3.2
-  firebase_messaging: ^15.1.3
   google_sign_in: ^6.2.1
 
   # State management
   flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
 
   # Navigation
   go_router: ^14.3.0
@@ -32,23 +29,47 @@ dependencies:
   image_picker: ^1.1.2
   google_mlkit_text_recognition: ^0.13.1
 
+  # Notifications (Phase 5)
+  flutter_local_notifications: ^17.2.2
+  timezone: ^0.9.4
+  shared_preferences: ^2.3.3
+
   # Utilities
   logger: ^2.4.0
   equatable: ^2.0.5
-  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # Code generation
-  build_runner: ^2.4.12
-  riverpod_generator: ^2.4.3
+  # Branding
+  flutter_launcher_icons: ^0.14.2
 
   # Linting
   flutter_lints: ^4.0.0
   custom_lint: ^0.7.6
   riverpod_lint: ^2.6.0
 
+# ── Launcher icon configuration (run: dart run flutter_launcher_icons) ───────
+flutter_launcher_icons:
+  android: true          # overwrites mipmap/ic_launcher at all densities
+  ios: false
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
+  # Adaptive icon (Android 8+ / API 26+)
+  adaptive_icon_background: "#3D52D5"  # AppColors.primary — solid colour layer
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  # Disable non-Android platforms
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
+  linux:
+    generate: false
+
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/

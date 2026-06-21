@@ -60,22 +60,24 @@ class ProductNameExtractor {
     final double wordScore;
     if (wordCount == 1) {
       wordScore = 0.4;
-    } else if (wordCount <= 5)
+    } else if (wordCount <= 5) {
       wordScore = 1.0;
-    else if (wordCount <= 8)
+    } else if (wordCount <= 8) {
       wordScore = 0.7;
-    else
+    } else {
       wordScore = 0.3;
+    }
 
     final double lengthScore;
     if (line.length >= 6 && line.length <= 40) {
       lengthScore = 1.0;
-    } else if (line.length < 6)
+    } else if (line.length < 6) {
       lengthScore = 0.4;
-    else if (line.length <= 80)
+    } else if (line.length <= 80) {
       lengthScore = 0.6;
-    else
+    } else {
       lengthScore = 0.2;
+    }
 
     // Bonus for ALL-CAPS words (common on product labels)
     final uppercaseCount = words

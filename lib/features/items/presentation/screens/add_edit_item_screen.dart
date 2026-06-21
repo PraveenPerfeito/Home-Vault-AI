@@ -117,11 +117,13 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
           children: [
             if (widget.scanResult != null && !_isEditing) ...[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppColors.info.withOpacity(0.08),
+                  color: AppColors.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.info.withOpacity(0.3)),
+                  border:
+                      Border.all(color: AppColors.info.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -223,8 +225,9 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
     _isSaving = true;
     final notifier = ref.read(itemActionsProvider.notifier);
     final name = _nameController.text.trim();
-    final notes =
-        _notesController.text.trim().isEmpty ? null : _notesController.text.trim();
+    final notes = _notesController.text.trim().isEmpty
+        ? null
+        : _notesController.text.trim();
 
     if (_isEditing) {
       notifier.updateItem(widget.existingItem!.copyWith(
@@ -305,8 +308,20 @@ class _DateField extends StatelessWidget {
   }
 
   String _format(DateTime d) {
-    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const m = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${d.day} ${m[d.month - 1]} ${d.year}';
   }
 }

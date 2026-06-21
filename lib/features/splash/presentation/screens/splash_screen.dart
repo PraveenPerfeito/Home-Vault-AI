@@ -14,10 +14,18 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  ProviderSubscription<AsyncValue<AppUser?>>? _authSub;
+
   @override
   void initState() {
     super.initState();
     _navigateAfterDelay();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.close();
+    super.dispose();
   }
 
   Future<void> _navigateAfterDelay() async {
@@ -28,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (authValue.isLoading) {
       // Auth hasn't resolved yet — wait for first non-loading emission.
-      ref.listenManual<AsyncValue<AppUser?>>(
+      _authSub = ref.listenManual<AsyncValue<AppUser?>>(
         authStateProvider,
         (_, next) {
           if (!next.isLoading && mounted) _goBasedOnAuth(next.valueOrNull);

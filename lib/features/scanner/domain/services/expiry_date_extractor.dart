@@ -56,6 +56,9 @@ class ExpiryDateExtractor {
 
     // Pattern 1 — DD/MM/YYYY (most specific, process first)
     for (final m in _ddmmyyyy.allMatches(text)) {
+      // Reserve span unconditionally so MM/YYYY (Pattern 2) never re-matches
+      // the sub-token MM/YYYY inside a rejected DD/MM/YYYY string.
+      ddmmSpans.add((m.start, m.end));
       final d = int.tryParse(m.group(1)!);
       final mo = int.tryParse(m.group(2)!);
       final y = int.tryParse(m.group(3)!);
@@ -63,11 +66,8 @@ class ExpiryDateExtractor {
       if (d < 1 || d > 31 || mo < 1 || mo > 12 || !_validYear(y)) continue;
       try {
         final date = DateTime(y, mo, d);
-        if (date.day == d) {
-          // date.day == d validates e.g. Feb 31 → March 3 (mismatch rejected)
-          results.add(date);
-          ddmmSpans.add((m.start, m.end));
-        }
+        // date.day == d validates calendar: Feb 31 normalises → mismatch rejected
+        if (date.day == d) results.add(date);
       } catch (_) {}
     }
 

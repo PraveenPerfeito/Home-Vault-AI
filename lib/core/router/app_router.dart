@@ -11,6 +11,7 @@ import 'package:home_vault/features/items/domain/entities/item.dart';
 import 'package:home_vault/features/items/presentation/screens/add_edit_item_screen.dart';
 import 'package:home_vault/features/scanner/domain/entities/scan_result.dart';
 import 'package:home_vault/features/scanner/presentation/screens/scanner_screen.dart';
+import 'package:home_vault/features/notifications/presentation/screens/notification_settings_screen.dart';
 import 'package:home_vault/features/splash/presentation/screens/splash_screen.dart';
 
 abstract class AppRoutes {
@@ -20,6 +21,7 @@ abstract class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String addItem = '/items/add';
   static const String scanner = '/scanner';
+  static const String notificationSettings = '/settings/notifications';
   static String editItem(String id) => '/items/$id/edit';
 }
 
@@ -115,6 +117,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.scanner,
         name: 'scanner',
         builder: (_, __) => const ScannerScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notificationSettings,
+        name: 'notification-settings',
+        builder: (_, __) => const NotificationSettingsScreen(),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(

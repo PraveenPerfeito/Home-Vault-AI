@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Firebase service singletons ──────────────────────────────────────────────
@@ -14,9 +13,4 @@ final firebaseAuthProvider = Provider<FirebaseAuth>(
 final firestoreProvider = Provider<FirebaseFirestore>(
   (_) => FirebaseFirestore.instance,
   name: 'firestore',
-);
-
-final firebaseStorageProvider = Provider<FirebaseStorage>(
-  (_) => FirebaseStorage.instance,
-  name: 'firebaseStorage',
 );
