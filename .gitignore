@@ -77,3 +77,8 @@ android/app/src/profile/
 # Environment secrets
 .env
 .env.local
+
+# Android release signing — NEVER commit keystore or key.properties
+android/key.properties
+*.jks
+*.keystore
