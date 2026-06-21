@@ -11,36 +11,26 @@ class AppException implements Exception {
 }
 
 class NetworkException extends AppException {
-  const NetworkException([
-    super.message = 'Network request failed.',
-    Object? cause,
-  ]) : super(cause: cause);
+  const NetworkException(String message, {Object? cause})
+      : super(message, cause: cause);
 }
 
 class AuthException extends AppException {
-  const AuthException([
-    super.message = 'Authentication error.',
-    Object? cause,
-  ]) : super(cause: cause);
+  const AuthException(String message, {Object? cause})
+      : super(message, cause: cause);
 }
 
 class StorageException extends AppException {
-  const StorageException([
-    super.message = 'Storage error.',
-    Object? cause,
-  ]) : super(cause: cause);
+  const StorageException(String message, {Object? cause})
+      : super(message, cause: cause);
 }
 
 class NotFoundException extends AppException {
-  const NotFoundException([
-    super.message = 'Resource not found.',
-    Object? cause,
-  ]) : super(cause: cause);
+  const NotFoundException(String message, {Object? cause})
+      : super(message, cause: cause);
 }
 
 class PermissionException extends AppException {
-  const PermissionException([
-    super.message = 'Permission denied.',
-    Object? cause,
-  ]) : super(cause: cause);
+  const PermissionException(String message, {Object? cause})
+      : super(message, cause: cause);
 }

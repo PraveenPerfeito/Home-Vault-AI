@@ -43,7 +43,7 @@ class DashboardScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: CircleAvatar(
                 radius: 16,
-                backgroundColor: AppColors.primary.withOpacity(0.15),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                 child: Text(
                   _initials(user?.nameOrEmail),
                   style: const TextStyle(
@@ -100,7 +100,7 @@ class DashboardScreen extends ConsumerWidget {
                     child: Text(
                       'Failed to load items.\n$e',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.error),
+                      style: const TextStyle(color: AppColors.error),
                     ),
                   ),
                   data: (items) => items.isEmpty
@@ -229,7 +229,7 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -249,7 +249,7 @@ class _StatCard extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
-                  ?.copyWith(color: color.withOpacity(0.8)),
+                  ?.copyWith(color: color.withValues(alpha: 0.8)),
             ),
           ],
         ),
@@ -267,7 +267,8 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.inventory_2_outlined, size: 72, color: AppColors.grey200),
+          const Icon(Icons.inventory_2_outlined,
+              size: 72, color: AppColors.grey200),
           const SizedBox(height: 16),
           Text(
             'No items yet',

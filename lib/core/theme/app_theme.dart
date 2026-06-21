@@ -37,7 +37,7 @@ abstract class AppTheme {
             AppTextStyles.headlineLarge.copyWith(color: textColor),
         surfaceTintColor: Colors.transparent,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
