@@ -14,7 +14,8 @@ class AppConfig {
   static const bool isStaging = env == 'staging';
   static const bool isDevelopment = env == 'development';
 
-  static const String appName = 'Home Vault';
+  static const String appName = 'Home Vault AI';
+  static const String brand = 'ViyaLabs';
   static const String packageName = 'com.viyalabs.home_vault';
 
   /// Free plan item limit per the PRD monetization spec.

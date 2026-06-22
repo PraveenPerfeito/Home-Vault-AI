@@ -1,10 +1,24 @@
-# Home Vault — Play Store Submission Guide
+# Home Vault AI — Play Store Submission Guide
+
+## Locked Branding
+
+| Field | Value |
+|-------|-------|
+| Brand | ViyaLabs |
+| App name (launcher) | **Home Vault AI** |
+| Play Store title | **Home Vault AI: Expiry Tracker** |
+| Tagline | **Never Miss an Expiry Date Again** |
+| Package name | `com.viyalabs.home_vault` |
+| Category | **Productivity** |
+| Secondary positioning | Home Management |
+
+---
 
 ## App Metadata
 
 | Field | Value |
 |-------|-------|
-| App name | Home Vault |
+| Play Store title | Home Vault AI: Expiry Tracker |
 | Package name | `com.viyalabs.home_vault` |
 | Version | 1.0.0 (version code 1) |
 | App category | **Productivity** |
@@ -17,9 +31,15 @@
 ## Short Description (80 chars max)
 
 ```
-Track expiry dates & home inventory — scan product labels with OCR.
+Scan products, track expiry dates, and get reminders before they expire.
 ```
-*(67 chars — within limit)*
+*(72 chars — within limit)*
+
+**Alternative:**
+```
+AI-powered expiry tracking for medicines, groceries, and household items.
+```
+*(73 chars — within limit)*
 
 ---
 
