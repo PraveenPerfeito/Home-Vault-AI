@@ -27,18 +27,18 @@ class ItemModel {
   factory ItemModel.fromFirestore(Map<String, dynamic> data, String id) =>
       ItemModel(
         id: id,
-        userId: data['userId'] as String,
-        name: data['name'] as String,
+        userId: (data['userId'] as String?) ?? '',
+        name: (data['name'] as String?) ?? 'Unknown',
         category: (data['category'] as String?) ?? 'other',
         photoUrl: data['photoUrl'] as String?,
-        purchaseDate: data['purchaseDate'] != null
+        purchaseDate: data['purchaseDate'] is Timestamp
             ? (data['purchaseDate'] as Timestamp).toDate()
             : null,
-        expiryDate: data['expiryDate'] != null
+        expiryDate: data['expiryDate'] is Timestamp
             ? (data['expiryDate'] as Timestamp).toDate()
             : null,
         notes: data['notes'] as String?,
-        createdAt: data['createdAt'] != null
+        createdAt: data['createdAt'] is Timestamp
             ? (data['createdAt'] as Timestamp).toDate()
             : DateTime.now(),
       );

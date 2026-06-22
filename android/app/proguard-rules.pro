@@ -10,6 +10,23 @@
 # Google Play Services — required by Firebase Auth and Google Sign-In.
 -keep class com.google.android.gms.** { *; }
 
+# flutter_local_notifications — R8 strips plugin + Gson serializers; keep entire package.
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-keep class com.dexterous.flutterlocalnotifications.models.** { *; }
+-keep class com.dexterous.flutterlocalnotifications.models.styles.** { *; }
+
+# Gson — required by flutter_local_notifications for NotificationDetails serialization.
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
 # image_picker — FileProvider for camera capture.
 -keep class androidx.core.content.FileProvider { *; }
 

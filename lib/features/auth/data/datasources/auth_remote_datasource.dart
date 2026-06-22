@@ -34,17 +34,24 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       });
 
   Future<UserModel> _getOrCreateUserDoc(User firebaseUser) async {
-    final docRef = _firestore.collection('users').doc(firebaseUser.uid);
-    final snap = await docRef.get();
+    try {
+      final docRef = _firestore.collection('users').doc(firebaseUser.uid);
+      final snap = await docRef.get();
 
-    if (snap.exists && snap.data() != null) {
-      return UserModel.fromFirestore(snap.data()!, snap.id);
+      if (snap.exists && snap.data() != null) {
+        return UserModel.fromFirestore(snap.data()!, snap.id);
+      }
+
+      // First sign-in: create the user document.
+      final newUser = UserModel.fromFirebaseUser(firebaseUser);
+      await docRef.set(newUser.toFirestore());
+      return newUser;
+    } catch (_) {
+      // Firestore unavailable (offline, permission error) — fall back to
+      // constructing the user from the already-authenticated FirebaseUser so
+      // the auth stream keeps emitting a valid user instead of crashing.
+      return UserModel.fromFirebaseUser(firebaseUser);
     }
-
-    // First sign-in: create the user document.
-    final newUser = UserModel.fromFirebaseUser(firebaseUser);
-    await docRef.set(newUser.toFirestore());
-    return newUser;
   }
 
   @override

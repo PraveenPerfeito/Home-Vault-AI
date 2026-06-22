@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_vault/core/error/app_exception.dart';
@@ -54,14 +55,28 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   }
 
   Future<void> _pick(ImageSource source) async {
-    final file = await ImagePicker().pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 2000,
-      maxHeight: 2000,
-    );
-    if (file == null || !mounted) return;
-    await ref.read(scanActionsProvider.notifier).scan(file.path);
+    try {
+      final file = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 2000,
+        maxHeight: 2000,
+      );
+      if (file == null || !mounted) return;
+      await ref.read(scanActionsProvider.notifier).scan(file.path);
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      final msg = e.code == 'camera_access_denied' || e.code == 'photo_access_denied'
+          ? 'Permission denied. Please allow access in Settings.'
+          : 'Could not open ${source == ImageSource.camera ? "camera" : "gallery"}.';
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(msg),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ));
+    }
   }
 
   void _reset() => ref.read(scanActionsProvider.notifier).reset();

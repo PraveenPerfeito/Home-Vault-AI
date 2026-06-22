@@ -110,7 +110,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/items/:id/edit',
         name: 'edit-item',
         builder: (_, state) => AddEditItemScreen(
-          existingItem: state.extra as Item?,
+          existingItem: state.extra is Item ? state.extra as Item : null,
         ),
       ),
       GoRoute(

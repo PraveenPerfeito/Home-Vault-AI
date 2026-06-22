@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,12 +15,30 @@ import 'package:home_vault/features/notifications/presentation/providers/notific
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Catch Flutter framework errors (widget build, layout, etc.).
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('[HomeVault] Flutter error: ${details.exception}');
+    debugPrint('[HomeVault] Stack: ${details.stack}');
+  };
+
+  // Catch async Dart errors that escape the Flutter framework (platform channel
+  // callbacks, isolate errors, etc.) — prevents silent app termination.
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('[HomeVault] Platform error: $error');
+    debugPrint('[HomeVault] Stack: $stack');
+    return true;
+  };
+
   await HiveService.init();
   await _initFirebase();
 
   // Initialize local notification service and timezone data.
   final notifService = NotificationService();
-  await notifService.initialize();
+  try {
+    await notifService.initialize();
+  } catch (e) {
+    debugPrint('[HomeVault] NotificationService init failed: $e');
+  }
 
   AppLogger.init();
   AppLogger.info('App starting — env: ${AppConfig.env}');
