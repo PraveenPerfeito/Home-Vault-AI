@@ -4,10 +4,23 @@ plugins {
     id "com.google.gms.google-services"
 }
 
-// Redirect build output to where Flutter expects it (fixes cross-drive path on Windows)
+// Redirect build output to where Flutter expects it (fixes cross-drive path on Windows).
+// IMPORTANT: This must come before the android{} block so that jniLibs.srcDirs (added
+// below) uses the correct buildDir.  The flutter-gradle-plugin registers jniLibs at the
+// DEFAULT buildDir during plugin application (before this assignment executes), so we
+// re-add the correct path explicitly inside android.sourceSets to ensure libapp.so (the
+// Dart AOT snapshot) is always packaged into the APK.
 buildDir = new File(rootProject.projectDir.parentFile, "build/app")
 
 android {
+    sourceSets {
+        main {
+            // Re-register Flutter's Dart AOT snapshot dir with the post-redirect buildDir.
+            // Without this, R8 packages the APK without libapp.so → "VM snapshot invalid" crash.
+            jniLibs.srcDirs += ["${buildDir}/intermediates/flutter/release/jniLibs",
+                                 "${buildDir}/intermediates/flutter/debug/jniLibs"]
+        }
+    }
     namespace "com.viyalabs.home_vault"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
